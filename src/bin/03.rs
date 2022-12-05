@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
     let mut sum = 0;
@@ -6,18 +6,19 @@ pub fn part_one(input: &str) -> Option<u32> {
     for line in input.lines() {
         let (first, second) = line.split_at(line.len() / 2);
 
-        for c in first.chars() {
-            if second.contains(c) {
-                let priority = if c.is_lowercase() {
-                    c as u32 - 'a' as u32 + 1
-                } else {
-                    c as u32 - 'A' as u32 + 27
-                };
+        let c = first
+            .chars()
+            .filter(|&c| second.contains(c))
+            .next()
+            .unwrap();
 
-                sum += priority;
-                break;
-            }
-        }
+        let priority = if c.is_lowercase() {
+            c as u32 - 'a' as u32 + 1
+        } else {
+            c as u32 - 'A' as u32 + 27
+        };
+
+        sum += priority;
     }
 
     Some(sum)
@@ -26,37 +27,24 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let mut sum = 0;
 
-    let mut lines = vec![];
+    for mut chunk in &input.lines().chunks(3) {
+        let first = chunk.next().unwrap();
+        let second = chunk.next().unwrap();
+        let third = chunk.next().unwrap();
 
-    for line in input.lines() {
-        lines.push(line);
+        let c = first
+            .chars()
+            .filter(|&c| second.contains(c) && third.contains(c))
+            .next()
+            .unwrap();
 
-        if lines.len() == 3 {
-            let mut chars2 = HashSet::new();
-            let mut chars3 = HashSet::new();
+        let priority = if c.is_lowercase() {
+            c as u32 - 'a' as u32 + 1
+        } else {
+            c as u32 - 'A' as u32 + 27
+        };
 
-            for c in lines[1].chars() {
-                chars2.insert(c);
-            }
-            for c in lines[2].chars() {
-                chars3.insert(c);
-            }
-
-            for c in lines[0].chars() {
-                if chars2.contains(&c) && chars3.contains(&c) {
-                    let priority = if c.is_lowercase() {
-                        c as u32 - 'a' as u32 + 1
-                    } else {
-                        c as u32 - 'A' as u32 + 27
-                    };
-
-                    sum += priority;
-                    break;
-                }
-            }
-
-            lines.clear();
-        }
+        sum += priority;
     }
 
     Some(sum)

@@ -9,9 +9,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         let (l_from, l_to): (u32, u32) = (l_from.parse().unwrap(), l_to.parse().unwrap());
         let (r_from, r_to): (u32, u32) = (r_from.parse().unwrap(), r_to.parse().unwrap());
 
-        if l_from >= r_from && l_to <= r_to {
-            count += 1;
-        } else if l_from <= r_from && l_to >= r_to {
+        if (l_from >= r_from && l_to <= r_to) || (l_from <= r_from && l_to >= r_to) {
             count += 1;
         }
     }
