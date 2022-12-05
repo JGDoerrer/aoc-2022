@@ -1,24 +1,37 @@
 use std::vec;
 
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<String> {
     let mut lines = input.lines();
 
+    let stack_count = 9;
+
     let mut stacks = vec![
-        vec!['H', 'R', 'B', 'D', 'Z', 'F', 'L', 'S'],
-        vec!['T', 'B', 'M', 'Z', 'R'],
-        vec!['Z', 'L', 'C', 'H', 'N', 'S'],
-        vec!['S', 'C', 'F', 'J'],
-        vec!['P', 'G', 'H', 'W', 'R', 'Z', 'B'],
-        vec!['V', 'J', 'Z', 'G', 'D', 'N', 'M', 'T'],
-        vec!['G', 'L', 'N', 'W', 'F', 'S', 'P', 'Q'],
-        vec!['M', 'Z', 'R'],
-        vec!['M', 'C', 'L', 'G', 'V', 'R', 'T'],
+        vec![],
+        vec![],
+        vec![],
+        vec![],
+        vec![],
+        vec![],
+        vec![],
+        vec![],
+        vec![],
     ];
 
     loop {
         let line = lines.next().unwrap();
 
         if line.starts_with('[') {
+            for i in 0..stack_count as usize {
+                let index = i * 4 + 1;
+                match line.chars().nth(index) {
+                    Some(c) => {
+                        if !c.is_whitespace() {
+                            stacks[i].insert(0, c);
+                        }
+                    }
+                    None => {}
+                }
+            }
         } else if line.trim().starts_with('1') {
         } else {
             break;
@@ -38,29 +51,36 @@ pub fn part_one(input: &str) -> Option<u32> {
         }
     }
 
-    dbg!(stacks);
-    None
+    Some(
+        stacks
+            .into_iter()
+            .map(|v| v.last().unwrap().clone())
+            .collect(),
+    )
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<String> {
     let mut lines = input.lines();
 
-    let mut stacks = vec![
-        vec!['H', 'R', 'B', 'D', 'Z', 'F', 'L', 'S'],
-        vec!['T', 'B', 'M', 'Z', 'R'],
-        vec!['Z', 'L', 'C', 'H', 'N', 'S'],
-        vec!['S', 'C', 'F', 'J'],
-        vec!['P', 'G', 'H', 'W', 'R', 'Z', 'B'],
-        vec!['V', 'J', 'Z', 'G', 'D', 'N', 'M', 'T'],
-        vec!['G', 'L', 'N', 'W', 'F', 'S', 'P', 'Q'],
-        vec!['M', 'Z', 'R'],
-        vec!['M', 'C', 'L', 'G', 'V', 'R', 'T'],
-    ];
+    let stack_count = 9;
+
+    let mut stacks: Vec<_> = (0..stack_count).map(|_| vec![]).collect();
 
     loop {
         let line = lines.next().unwrap();
 
         if line.starts_with('[') {
+            for i in 0..stack_count as usize {
+                let index = i * 4 + 1;
+                match line.chars().nth(index) {
+                    Some(c) => {
+                        if !c.is_whitespace() {
+                            stacks[i].insert(0, c);
+                        }
+                    }
+                    None => {}
+                }
+            }
         } else if line.trim().starts_with('1') {
         } else {
             break;
@@ -83,8 +103,12 @@ pub fn part_two(input: &str) -> Option<u32> {
         }
     }
 
-    dbg!(stacks);
-    None
+    Some(
+        stacks
+            .into_iter()
+            .map(|v| v.last().unwrap().clone())
+            .collect(),
+    )
 }
 
 fn main() {
