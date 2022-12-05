@@ -36,7 +36,7 @@ macro_rules! solve {
             }
         }
 
-        println!("🎄 {}Part {}{} 🎄", ANSI_BOLD, $part, ANSI_RESET);
+        println!("{}Part {}{}", ANSI_BOLD, $part, ANSI_RESET);
         print_result($solver, $input);
     }};
 }
