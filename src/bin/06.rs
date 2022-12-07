@@ -3,36 +3,30 @@ use itertools::Itertools;
 pub fn part_one(input: &str) -> Option<u32> {
     Some(
         input
-            .char_indices()
+            .bytes()
             .tuple_windows()
-            .filter(|((_, a), (_, b), (_, c), (_, d))| {
-                a != b && a != c && a != d && b != c && b != d && c != d
-            })
-            .next()
-            .unwrap()
-            .3
-             .0 as u32
-            + 1,
+            .position(|(a, b, c, d)| a != b && a != c && a != d && b != c && b != d && c != d)
+            .unwrap() as u32
+            + 4,
     )
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
     let chars: Vec<_> = input.chars().collect();
-    let mut index = 14;
 
-    for window in chars.windows(14) {
-        if window
-            .iter()
-            .filter(|c| window.iter().filter(|a| a == c).count() > 1)
-            .next()
-            == None
-        {
-            break;
-        }
-        index += 1;
-    }
-
-    Some(index)
+    Some(
+        chars
+            .windows(14)
+            .position(|window| {
+                window
+                    .iter()
+                    .filter(|c| window.iter().filter(|a| a == c).count() > 1)
+                    .next()
+                    == None
+            })
+            .unwrap() as u32
+            + 14,
+    )
 }
 
 fn main() {
