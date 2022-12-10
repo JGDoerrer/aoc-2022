@@ -131,8 +131,8 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     let mut best = 0;
 
-    for x in 0..trees.len() {
-        for y in 0..trees[x].len() {
+    for x in 1..trees.len() - 1 {
+        for y in 1..trees[x].len() - 1 {
             best = best.max(visibility(&trees, (x, y)));
         }
     }
@@ -153,7 +153,7 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::read_file("examples", 8);
-        assert_eq!(part_one(&input), None);
+        assert_eq!(part_one(&input), Some(21));
     }
 
     #[test]

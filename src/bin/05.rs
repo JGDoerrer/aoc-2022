@@ -2,14 +2,14 @@ use std::{str::Lines, vec};
 
 #[inline]
 fn parse_stacks(lines: &mut Lines) -> Vec<Vec<char>> {
-    let stack_count = 9;
+    let stack_count = (lines.clone().next().unwrap().len() + 1) / 4;
 
     let mut stacks: Vec<_> = (0..stack_count).map(|_| vec![]).collect();
 
     loop {
         let line = lines.next().unwrap();
 
-        if line.starts_with('[') {
+        if line.contains('[') {
             for i in 0..stack_count as usize {
                 let index = i * 4 + 1;
                 match line.chars().nth(index) {
@@ -97,12 +97,12 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::read_file("examples", 5);
-        assert_eq!(part_one(&input), None);
+        assert_eq!(part_one(&input), Some("CMZ".to_string()));
     }
 
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 5);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some("MCD".to_string()));
     }
 }

@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 pub fn part_one(input: &str) -> Option<u32> {
     let mut head: (i32, i32) = (0, 0);
@@ -135,7 +135,7 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::read_file("examples", 9);
-        assert_eq!(part_one(&input), Some(13));
+        assert_eq!(part_one(&input), Some(88));
     }
 
     #[test]

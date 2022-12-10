@@ -41,8 +41,6 @@ pub fn part_one(input: &str) -> Option<i32> {
 
 pub fn part_two(input: &str) -> Option<String> {
     let mut x = 1;
-    let mut cycle = 0;
-    let mut sum = 0;
     let mut is_adding = false;
 
     let mut crt = 0;
@@ -50,11 +48,8 @@ pub fn part_two(input: &str) -> Option<String> {
 
     for line in input.lines() {
         match &line[0..4] {
-            "noop" => cycle += 1,
-            "addx" => {
-                cycle += 1;
-                is_adding = true;
-            }
+            "noop" => {}
+            "addx" => is_adding = true,
             _ => unreachable!(),
         }
 
@@ -67,7 +62,6 @@ pub fn part_two(input: &str) -> Option<String> {
 
         if is_adding {
             is_adding = false;
-            cycle += 1;
 
             screen.push(crt == x + 1 || crt == x || crt == x - 1);
             if crt == 39 {
