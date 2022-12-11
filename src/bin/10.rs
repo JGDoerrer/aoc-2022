@@ -77,7 +77,7 @@ pub fn part_two(input: &str) -> Option<String> {
     let mut output = String::new();
     for y in 0..6 {
         for x in 0..40 {
-            output += if screen[x + y * 40] { "#" } else { "." }
+            output += if screen[x + y * 40] { "#" } else { " " }
         }
         output += "\n";
     }
@@ -104,6 +104,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 10);
-        assert_eq!(part_two(&input), Some("##..##..##..##..##..##..##..##..##..##..\n###...###...###...###...###...###...###.\n####....####....####....####....####....\n#####.....#####.....#####.....#####.....\n######......######......######......####\n#######.......#######.......#######.....\n".to_string()));
+        assert_eq!(part_two(&input), Some("##  ##  ##  ##  ##  ##  ##  ##  ##  ##  \n###   ###   ###   ###   ###   ###   ### \n####    ####    ####    ####    ####    \n#####     #####     #####     #####     \n######      ######      ######      ####\n#######       #######       #######     \n".to_string()));
     }
 }

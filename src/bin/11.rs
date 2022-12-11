@@ -92,7 +92,6 @@ pub fn part_two(input: &str) -> Option<usize> {
     let mut monkeys = parse_monkeys(input);
 
     let tests: usize = monkeys.iter().map(|m| m.test).product();
-    dbg!(tests);
 
     for _ in 0..10000 {
         for i in 0..monkeys.len() {
