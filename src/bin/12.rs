@@ -87,11 +87,47 @@ pub fn part_two(input: &str) -> Option<u32> {
     let (map, _, end) = parse_map(input);
 
     let mut min_steps = u32::MAX;
+    let mut visited = HashSet::new();
+    let mut queue = BinaryHeap::new();
+    let mut costs = HashMap::new();
+    let mut prev = HashMap::new();
 
-    for x in 0..map.len() {
-        for y in 0..map[x].len() {
-            if map[x][y] == 0 {
-                min_steps = min_steps.min(get_steps(&map, (x, y), end).unwrap_or(u32::MAX));
+    queue.push(Reverse((0, end)));
+    costs.insert(end, 0);
+
+    while let Some(Reverse((_, (x, y)))) = queue.pop() {
+        let elevation = map[x][y];
+        if elevation == 0 {
+            min_steps = *costs.get(&(x, y)).unwrap();
+            break;
+        }
+        if visited.contains(&(x, y)) {
+            continue;
+        }
+
+        visited.insert((x, y));
+
+        let mut dirs = vec![(x + 1, y), (x, y + 1)];
+        if x > 0 {
+            dirs.push((x - 1, y));
+        }
+        if y > 0 {
+            dirs.push((x, y - 1));
+        }
+
+        for (dx, dy) in dirs {
+            if let Some(Some(elev)) = map.get(dx).map(|t| t.get(dy)) {
+                if *elev + 1 >= elevation {
+                    let old_cost = costs.get(&(dx, dy)).unwrap_or(&u32::MAX);
+                    let other_cost = costs.get(&(x, y)).unwrap_or(&u32::MAX);
+
+                    if *other_cost + 1 < *old_cost {
+                        costs.insert((dx, dy), *other_cost + 1);
+                        prev.insert((dx, dy), (x, y));
+                    }
+
+                    queue.push(Reverse((*costs.get(&(dx, dy)).unwrap(), (dx, dy))));
+                }
             }
         }
     }
