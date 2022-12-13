@@ -42,11 +42,9 @@ pub fn part_one(input: &str) -> Option<u32> {
         if (x, y) == end {
             break;
         }
-        if visited.contains(&(x, y)) {
+        if !visited.insert((x, y)) {
             continue;
         }
-
-        visited.insert((x, y));
 
         let elevation = map[x][y];
         let mut dirs = vec![(x + 1, y), (x, y + 1)];
@@ -61,13 +59,15 @@ pub fn part_one(input: &str) -> Option<u32> {
             if let Some(Some(elev)) = map.get(dx).map(|t| t.get(dy)) {
                 if *elev <= elevation + 1 {
                     let old_cost = costs.get(&(dx, dy)).unwrap_or(&u32::MAX);
-                    let other_cost = costs.get(&(x, y)).unwrap_or(&u32::MAX);
+                    let other_cost = costs.get(&(x, y)).unwrap();
 
-                    if *other_cost + 1 < *old_cost {
-                        costs.insert((dx, dy), *other_cost + 1);
+                    let new_cost = (*old_cost).min(*other_cost + 1);
+
+                    if new_cost < *old_cost {
+                        costs.insert((dx, dy), new_cost);
                     }
 
-                    queue.push(Reverse((*costs.get(&(dx, dy)).unwrap(), (dx, dy))));
+                    queue.push(Reverse((new_cost, (dx, dy))));
                 }
             }
         }
@@ -93,11 +93,9 @@ pub fn part_two(input: &str) -> Option<u32> {
             min_steps = *costs.get(&(x, y)).unwrap();
             break;
         }
-        if visited.contains(&(x, y)) {
+        if !visited.insert((x, y)) {
             continue;
         }
-
-        visited.insert((x, y));
 
         let mut dirs = vec![(x + 1, y), (x, y + 1)];
         if x > 0 {
@@ -111,13 +109,15 @@ pub fn part_two(input: &str) -> Option<u32> {
             if let Some(Some(elev)) = map.get(dx).map(|t| t.get(dy)) {
                 if *elev + 1 >= elevation {
                     let old_cost = costs.get(&(dx, dy)).unwrap_or(&u32::MAX);
-                    let other_cost = costs.get(&(x, y)).unwrap_or(&u32::MAX);
+                    let other_cost = costs.get(&(x, y)).unwrap();
 
-                    if *other_cost + 1 < *old_cost {
-                        costs.insert((dx, dy), *other_cost + 1);
+                    let new_cost = (*old_cost).min(*other_cost + 1);
+
+                    if new_cost < *old_cost {
+                        costs.insert((dx, dy), new_cost);
                     }
 
-                    queue.push(Reverse((*costs.get(&(dx, dy)).unwrap(), (dx, dy))));
+                    queue.push(Reverse((new_cost, (dx, dy))));
                 }
             }
         }
