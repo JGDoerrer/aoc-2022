@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, fmt::Display};
+use std::cmp::Ordering;
 
 use itertools::Itertools;
 
@@ -8,55 +8,26 @@ enum List {
     Value(u32),
 }
 
-impl Display for List {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            List::List(list) => {
-                write!(f, "[")?;
-                if !list.is_empty() {
-                    write!(f, "{}", list[0])?;
-                }
-                for value in list.iter().skip(1) {
-                    write!(f, ",{}", value)?;
-                }
-                write!(f, "]")?;
-                Ok(())
-            }
-            List::Value(value) => {
-                write!(f, "{}", value)
-            }
-        }
-    }
-}
-
 impl Ord for List {
     fn cmp(&self, other: &Self) -> Ordering {
-        let a = &self;
-        let b = other;
-        match a {
-            List::List(list_a) => match b {
+        match self {
+            List::List(list_a) => match other {
                 List::List(list_b) => {
-                    for (a, b) in list_a.iter().zip(list_b) {
-                        match a.cmp(b) {
-                            Ordering::Equal => {}
-                            o => return o,
-                        }
+                    match list_a
+                        .iter()
+                        .zip(list_b)
+                        .map(|(a, b)| a.cmp(b))
+                        .filter(|o| *o != Ordering::Equal)
+                        .next()
+                    {
+                        Some(o) => o,
+                        None => list_a.len().cmp(&list_b.len()),
                     }
-
-                    list_a.len().cmp(&list_b.len())
                 }
-                List::Value(value_b) => {
-                    let list_b = List::List(vec![List::Value(*value_b)]);
-
-                    a.cmp(&&list_b)
-                }
+                List::Value(value_b) => self.cmp(&&List::List(vec![List::Value(*value_b)])),
             },
-            List::Value(value_a) => match b {
-                List::List(_) => {
-                    let list_a = List::List(vec![List::Value(*value_a)]);
-
-                    list_a.cmp(b)
-                }
+            List::Value(value_a) => match other {
+                List::List(_) => List::List(vec![List::Value(*value_a)]).cmp(other),
                 List::Value(value_b) => value_a.cmp(value_b),
             },
         }
@@ -80,9 +51,7 @@ impl Eq for List {}
 fn parse_list(line: &str) -> List {
     if line.starts_with('[') {
         let mut list = vec![];
-
         let mut level = 0;
-
         let mut value = String::new();
 
         for char in line.chars() {
@@ -99,7 +68,7 @@ fn parse_list(line: &str) -> List {
                             let item = parse_list(value.as_str());
                             list.push(item);
                         }
-                        value = String::new();
+                        value.clear();
                     } else {
                         value.push(char);
                     }
@@ -111,8 +80,7 @@ fn parse_list(line: &str) -> List {
                             let item = parse_list(value.as_str());
                             list.push(item);
                         }
-
-                        value = String::new();
+                        value.clear();
                     } else {
                         value.push(char)
                     }
@@ -136,17 +104,15 @@ fn parse_lists(input: &str) -> Vec<List> {
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let lists = parse_lists(input);
-
-    let mut count = 0;
-
-    for (i, (a, b)) in lists.iter().tuples().enumerate() {
-        if a < b {
-            count += i + 1;
-        }
-    }
-
-    Some(count as u32)
+    Some(
+        parse_lists(input)
+            .iter()
+            .tuples()
+            .enumerate()
+            .filter(|(_, (a, b))| a < b)
+            .map(|(i, _)| i + 1)
+            .sum::<usize>() as u32,
+    )
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
