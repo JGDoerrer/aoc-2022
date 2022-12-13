@@ -29,11 +29,11 @@ pub fn parse_map(input: &str) -> (Vec<Vec<u32>>, (usize, usize), (usize, usize))
     (map, start, end)
 }
 
-fn get_steps(map: &Vec<Vec<u32>>, start: (usize, usize), end: (usize, usize)) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<u32> {
+    let (map, start, end) = parse_map(input);
     let mut visited = HashSet::new();
     let mut queue = BinaryHeap::new();
     let mut costs = HashMap::new();
-    let mut prev = HashMap::new();
 
     queue.push(Reverse((0, start)));
     costs.insert(start, 0);
@@ -65,7 +65,6 @@ fn get_steps(map: &Vec<Vec<u32>>, start: (usize, usize), end: (usize, usize)) ->
 
                     if *other_cost + 1 < *old_cost {
                         costs.insert((dx, dy), *other_cost + 1);
-                        prev.insert((dx, dy), (x, y));
                     }
 
                     queue.push(Reverse((*costs.get(&(dx, dy)).unwrap(), (dx, dy))));
@@ -77,12 +76,6 @@ fn get_steps(map: &Vec<Vec<u32>>, start: (usize, usize), end: (usize, usize)) ->
     costs.get(&end).map(|t| *t)
 }
 
-pub fn part_one(input: &str) -> Option<u32> {
-    let (map, start, end) = parse_map(input);
-
-    get_steps(&map, start, end)
-}
-
 pub fn part_two(input: &str) -> Option<u32> {
     let (map, _, end) = parse_map(input);
 
@@ -90,7 +83,6 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut visited = HashSet::new();
     let mut queue = BinaryHeap::new();
     let mut costs = HashMap::new();
-    let mut prev = HashMap::new();
 
     queue.push(Reverse((0, end)));
     costs.insert(end, 0);
@@ -123,7 +115,6 @@ pub fn part_two(input: &str) -> Option<u32> {
 
                     if *other_cost + 1 < *old_cost {
                         costs.insert((dx, dy), *other_cost + 1);
-                        prev.insert((dx, dy), (x, y));
                     }
 
                     queue.push(Reverse((*costs.get(&(dx, dy)).unwrap(), (dx, dy))));
