@@ -21,7 +21,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         .iter()
         .enumerate()
         .rev()
-        .find(|(i, row)| row.iter().any(|t| *t))
+        .find(|(_, row)| row.iter().any(|t| *t))
         .unwrap()
         .0;
 
@@ -108,7 +108,7 @@ pub fn part_one(input: &str) -> Option<u32> {
                 .iter()
                 .enumerate()
                 .rev()
-                .find(|(i, row)| row.iter().any(|t| *t))
+                .find(|(_, row)| row.iter().any(|t| *t))
                 .unwrap()
                 .0;
 
@@ -143,7 +143,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         .iter()
         .enumerate()
         .rev()
-        .find(|(i, row)| row.iter().any(|t| *t))
+        .find(|(_, row)| row.iter().any(|t| *t))
         .unwrap()
         .0;
 
@@ -164,7 +164,6 @@ pub fn part_two(input: &str) -> Option<usize> {
     let mut tower = vec![[true; 7]];
 
     let mut current_rock = rocks[0].clone();
-    let mut shift = (0, 0);
     let mut next_rock = 1;
     let mut rock_count = 0;
 
@@ -172,7 +171,7 @@ pub fn part_two(input: &str) -> Option<usize> {
         .iter()
         .enumerate()
         .rev()
-        .find(|(i, row)| row.iter().any(|t| *t))
+        .find(|(_, row)| row.iter().any(|t| *t))
         .unwrap()
         .0;
 
@@ -181,11 +180,6 @@ pub fn part_two(input: &str) -> Option<usize> {
     current_rock
         .iter_mut()
         .for_each(|(x, y)| (*x, *y) = (*x + 2, *y + top + 4));
-    shift = (2, top + 4);
-
-    let mut cycle_length = 0;
-    let mut cycle_height = 0;
-
     let mut states = vec![];
 
     loop {
@@ -204,7 +198,6 @@ pub fn part_two(input: &str) -> Option<usize> {
                     current_rock
                         .iter_mut()
                         .for_each(|(x, y)| (*x, *y) = (*x - 1, *y));
-                    shift.0 -= 1;
                 }
             }
             '>' => {
@@ -220,7 +213,6 @@ pub fn part_two(input: &str) -> Option<usize> {
                     current_rock
                         .iter_mut()
                         .for_each(|(x, y)| (*x, *y) = (*x + 1, *y));
-                    shift.0 += 1;
                 }
             }
             _ => unreachable!(),
@@ -253,14 +245,13 @@ pub fn part_two(input: &str) -> Option<usize> {
                 .iter()
                 .enumerate()
                 .rev()
-                .find(|(i, row)| row.iter().any(|t| *t))
+                .find(|(_, row)| row.iter().any(|t| *t))
                 .unwrap()
                 .0;
 
             current_rock
                 .iter_mut()
                 .for_each(|(x, y)| (*x, *y) = (*x + 2, *y + top + 4));
-            shift = (2, top + 4);
 
             next_rock = (next_rock + 1) % rocks.len();
             rock_count += 1;
@@ -289,7 +280,7 @@ pub fn part_two(input: &str) -> Option<usize> {
 
                 let missing = states
                     .iter()
-                    .find(|(count, height, next, j)| *count == start_count + missing)
+                    .find(|(count, _, _, _)| *count == start_count + missing)
                     .unwrap();
 
                 dbg!(a, b, missing);
@@ -307,7 +298,6 @@ pub fn part_two(input: &str) -> Option<usize> {
             current_rock
                 .iter_mut()
                 .for_each(|(x, y)| (*x, *y) = (*x, *y - 1));
-            shift.1 -= 1;
         }
     }
 }

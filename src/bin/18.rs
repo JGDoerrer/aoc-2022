@@ -141,7 +141,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut inner = vec![];
     let mut outer = vec![];
 
-    for (i, (x, y, z)) in cubes.iter().enumerate() {
+    for (x, y, z) in &cubes {
         let mut surface = 6;
 
         if cubes.contains(&(*x - 1, *y, *z))
