@@ -8,20 +8,14 @@ pub fn part_one(input: &str) -> Option<i32> {
     }
 
     let mut numbers = numbers.into_iter().enumerate().collect_vec();
+    let len = numbers.len() as i32 - 1;
 
     for (i, number) in numbers.clone() {
         let position = numbers.iter().position(|(j, _)| *j == i).unwrap();
-        let new_position =
-            ((position as i32 + number + numbers.len() as i32 - 1 + numbers.len() as i32 - 1)
-                % (numbers.len() as i32 - 1)) as usize;
+        let new_position = ((position as i32 + number + len + len) % len) as usize;
 
-        if position < new_position {
-            numbers.remove(position);
-            numbers.insert(new_position, (i, number));
-        } else {
-            numbers.remove(position);
-            numbers.insert(new_position, (i, number));
-        }
+        numbers.remove(position);
+        numbers.insert(new_position, (i, number));
     }
 
     let zero = numbers.iter().position(|(_, n)| *n == 0).unwrap();
@@ -55,15 +49,10 @@ pub fn part_two(input: &str) -> Option<i64> {
         for i in 0..numbers.len() {
             let position = numbers.iter().position(|(j, _)| *j == i).unwrap();
             let number = numbers[position].1;
-            let new_position = (((position as i64 + number + len) % len + len) % len) as usize;
+            let new_position = (((position as i64 + number) % len + len) % len) as usize;
 
-            if position < new_position {
-                numbers.remove(position);
-                numbers.insert(new_position, (i, number));
-            } else {
-                numbers.remove(position);
-                numbers.insert(new_position, (i, number));
-            }
+            numbers.remove(position);
+            numbers.insert(new_position, (i, number));
         }
     }
 
