@@ -42,14 +42,10 @@ fn calc2(monkeys: &HashMap<&str, Math>, results: &mut HashMap<String, i64>, name
                 Math::Eq(a, b) => {
                     if contains_human(monkeys, a) {
                         let other = calc(monkeys, results, b);
-                        dbg!(other);
                         calc3(monkeys, results, a, other)
-                    } else if contains_human(monkeys, b) {
-                        let other = calc(monkeys, results, a);
-                        dbg!(other);
-                        calc3(monkeys, results, b, other)
                     } else {
-                        unreachable!()
+                        let other = calc(monkeys, results, a);
+                        calc3(monkeys, results, b, other)
                     }
                 }
                 _ => unreachable!(),
@@ -68,62 +64,47 @@ fn calc3(
 ) -> i64 {
     match results.get(name) {
         Some(res) => *res,
-        None => {
-            let result = match monkeys.get(name).unwrap() {
-                Math::Number(num) => *num,
-                Math::Add(a, b) => {
-                    if contains_human(monkeys, a) {
-                        let other = calc(monkeys, results, b);
-                        calc3(monkeys, results, a, needed - other)
-                    } else if contains_human(monkeys, b) {
-                        let other = calc(monkeys, results, a);
-                        calc3(monkeys, results, b, needed - other)
-                    } else {
-                        calc(monkeys, results, a) + calc(monkeys, results, b)
-                    }
+        None => match monkeys.get(name).unwrap() {
+            Math::Number(num) => *num,
+            Math::Add(a, b) => {
+                if contains_human(monkeys, a) {
+                    let other = calc(monkeys, results, b);
+                    calc3(monkeys, results, a, needed - other)
+                } else {
+                    let other = calc(monkeys, results, a);
+                    calc3(monkeys, results, b, needed - other)
                 }
-                Math::Sub(a, b) => {
-                    if contains_human(monkeys, a) {
-                        let other = calc(monkeys, results, b);
-                        calc3(monkeys, results, a, needed + other)
-                    } else if contains_human(monkeys, b) {
-                        let other = calc(monkeys, results, a);
-                        calc3(monkeys, results, b, other - needed)
-                    } else {
-                        calc(monkeys, results, a) - calc(monkeys, results, b)
-                    }
+            }
+            Math::Sub(a, b) => {
+                if contains_human(monkeys, a) {
+                    let other = calc(monkeys, results, b);
+                    calc3(monkeys, results, a, needed + other)
+                } else {
+                    let other = calc(monkeys, results, a);
+                    calc3(monkeys, results, b, other - needed)
                 }
-                Math::Mul(a, b) => {
-                    if contains_human(monkeys, a) {
-                        let other = calc(monkeys, results, b);
-                        calc3(monkeys, results, a, needed / other)
-                    } else if contains_human(monkeys, b) {
-                        let other = calc(monkeys, results, a);
-                        calc3(monkeys, results, b, needed / other)
-                    } else {
-                        calc(monkeys, results, a) * calc(monkeys, results, b)
-                    }
+            }
+            Math::Mul(a, b) => {
+                if contains_human(monkeys, a) {
+                    let other = calc(monkeys, results, b);
+                    calc3(monkeys, results, a, needed / other)
+                } else {
+                    let other = calc(monkeys, results, a);
+                    calc3(monkeys, results, b, needed / other)
                 }
-                Math::Div(a, b) => {
-                    if contains_human(monkeys, a) {
-                        let other = calc(monkeys, results, b);
-                        calc3(monkeys, results, a, needed * other)
-                    } else if contains_human(monkeys, b) {
-                        let other = calc(monkeys, results, a);
-                        calc3(monkeys, results, b, needed * other)
-                    } else {
-                        calc(monkeys, results, a) / calc(monkeys, results, b)
-                    }
+            }
+            Math::Div(a, b) => {
+                if contains_human(monkeys, a) {
+                    let other = calc(monkeys, results, b);
+                    calc3(monkeys, results, a, needed * other)
+                } else {
+                    let other = calc(monkeys, results, a);
+                    calc3(monkeys, results, b, needed * other)
                 }
-                Math::Human => {
-                    dbg!(needed);
-                    needed
-                }
-                _ => unreachable!(),
-            };
-            results.insert(name.to_string(), result);
-            result
-        }
+            }
+            Math::Human => needed,
+            _ => unreachable!(),
+        },
     }
 }
 
