@@ -175,8 +175,6 @@ pub fn part_two(input: &str) -> Option<usize> {
         .unwrap()
         .0;
 
-    dbg!(top);
-
     current_rock
         .iter_mut()
         .for_each(|(x, y)| (*x, *y) = (*x + 2, *y + top + 4));
@@ -276,17 +274,12 @@ pub fn part_two(input: &str) -> Option<usize> {
                 let cycles = (count - start_count) / count_diff;
                 let missing = (count - start_count) % count_diff;
 
-                dbg!(missing);
-
                 let missing = states
                     .iter()
                     .find(|(count, _, _, _)| *count == start_count + missing)
                     .unwrap();
 
-                dbg!(a, b, missing);
                 let missing = missing.1 - a.1;
-
-                dbg!(missing);
 
                 let rocks = start_height + missing + cycles * height_diff;
 

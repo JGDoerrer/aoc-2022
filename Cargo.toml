@@ -13,3 +13,4 @@ itertools = "0.10.5"
 
 [profile.release]
 lto = "thin"
+strip = true

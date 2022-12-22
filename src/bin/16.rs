@@ -2,17 +2,14 @@ use std::collections::HashMap;
 
 use itertools::Itertools;
 
-fn parse_valves(input: &str) -> HashMap<String, (u32, Vec<String>)> {
+fn parse_valves(input: &str) -> HashMap<&str, (u32, Vec<&str>)> {
     let mut valves = HashMap::new();
 
     for line in input.lines() {
-        let valve = line[6..8].to_string();
+        let valve = &line[6..8];
         let (flow, connections) = line[23..].split_once(';').unwrap();
         let flow = flow.parse().unwrap();
-        let connections = connections[23..]
-            .split(',')
-            .map(|s| s.trim().to_string())
-            .collect_vec();
+        let connections = connections[23..].split(',').map(|s| s.trim()).collect_vec();
 
         valves.insert(valve, (flow, connections));
     }
@@ -23,7 +20,7 @@ fn parse_valves(input: &str) -> HashMap<String, (u32, Vec<String>)> {
 pub fn part_one(input: &str) -> Option<u32> {
     let valves = parse_valves(input);
 
-    let mut states = vec![(0, "AA".to_string(), vec![])];
+    let mut states = vec![(0, "AA", vec![])];
 
     for _ in 0..30 {
         let mut new_states = vec![];
@@ -40,7 +37,6 @@ pub fn part_one(input: &str) -> Option<u32> {
                 new_states.push((pressure, valve.clone(), open.clone()));
             }
         }
-        dbg!(new_states.len());
         new_states.sort();
         new_states.dedup();
         states = new_states.into_iter().rev().take(100).collect_vec();
@@ -69,7 +65,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         .filter(|(_, (p, _))| *p != 0)
         .map(|(_, (p, _))| p)
         .sum();
-    let mut states = vec![(0, "AA".to_string(), "AA".to_string(), zero_valves.clone())];
+    let mut states = vec![(0, "AA", "AA", zero_valves)];
 
     for i in (0..26).rev() {
         let mut new_states = vec![];
@@ -83,45 +79,55 @@ pub fn part_two(input: &str) -> Option<u32> {
 
             if !open.contains(&current) {
                 let mut new = open.clone();
-                new.push(current.clone());
+                new.push(current);
 
                 for valve2 in &valves.get(&elephant).unwrap().1 {
-                    new_states.push((pressure, current.clone(), valve2.clone(), new.clone()));
+                    new_states.push((pressure, current, valve2, new.clone()));
                 }
             }
             if !open.contains(&elephant) {
                 let mut new = open.clone();
-                new.push(elephant.clone());
+                new.push(elephant);
 
                 for valve1 in &valves.get(&current).unwrap().1 {
-                    new_states.push((pressure, valve1.clone(), elephant.clone(), new.clone()));
+                    new_states.push((pressure, valve1, elephant, new.clone()));
                 }
             }
             if !open.contains(&current) && !open.contains(&elephant) && current != elephant {
                 let mut new = open.clone();
-                new.push(current.clone());
-                new.push(elephant.clone());
+                new.push(current);
+                new.push(elephant);
 
-                new_states.push((pressure, current.clone(), elephant.clone(), new.clone()));
+                new_states.push((pressure, current, elephant, new));
             }
 
             for valve1 in &valves.get(&current).unwrap().1 {
                 for valve2 in &valves.get(&elephant).unwrap().1 {
-                    new_states.push((pressure, valve1.clone(), valve2.clone(), open.clone()));
+                    new_states.push((pressure, valve1, valve2, open.clone()));
                 }
             }
         }
 
-        dbg!(new_states.len());
+        let best = new_states
+            .iter()
+            .max_by(|a, b| {
+                (a.0 + i * a.3.iter().map(|v| valves.get(v).unwrap().0).sum::<u32>())
+                    .cmp(&(b.0 + i * b.3.iter().map(|v| valves.get(v).unwrap().0).sum::<u32>()))
+            })
+            .unwrap();
+        let best = best.0 + i * best.3.iter().map(|v| valves.get(v).unwrap().0).sum::<u32>();
+
         new_states.retain(|candidate| {
             let potential = candidate.0 + non_zero_valves * i;
-            potential > 1000
+            potential >= best
         });
+        new_states.sort();
+        new_states.dedup();
         new_states.sort_by(|a, b| {
             (a.0 + i * a.3.iter().map(|v| valves.get(v).unwrap().0).sum::<u32>())
                 .cmp(&(b.0 + i * b.3.iter().map(|v| valves.get(v).unwrap().0).sum::<u32>()))
         });
-        new_states.dedup();
+        dbg!(new_states.len());
         states = new_states.into_iter().rev().take(100000).collect_vec();
     }
 
