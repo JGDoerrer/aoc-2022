@@ -102,8 +102,16 @@ pub fn part_one(input: &str) -> Option<u32> {
 
         positions.sort();
         positions.dedup();
-
-        dbg!(positions.len());
+        positions.sort_by(|a, b| {
+            let ax = a.0 - map.len() - 1;
+            let ay = a.1 - map[0].len() - 2;
+            let bx = b.0 - map.len() - 1;
+            let by = b.1 - map[0].len() - 2;
+            let a = ax * ax + ay * ay;
+            let b = bx * bx + by * by;
+            a.cmp(&b)
+        });
+        positions.truncate(50);
 
         if positions.contains(&(map.len() - 1, map[0].len() - 2)) {
             return Some(i + 1);
@@ -202,6 +210,9 @@ pub fn part_two(input: &str) -> Option<u32> {
             }
         });
 
+        positions.sort();
+        positions.dedup();
+
         positions.retain(|(x, y)| {
             blizzards
                 .iter()
@@ -210,8 +221,29 @@ pub fn part_two(input: &str) -> Option<u32> {
                 .is_none()
         });
 
-        positions.sort();
-        positions.dedup();
+        if !reached_end || reached_start {
+            positions.sort_by(|a, b| {
+                let ax = a.0 - map.len() - 1;
+                let ay = a.1 - map[0].len() - 2;
+                let bx = b.0 - map.len() - 1;
+                let by = b.1 - map[0].len() - 2;
+                let a = ax * ax + ay * ay;
+                let b = bx * bx + by * by;
+                a.cmp(&b)
+            });
+        } else if !reached_start {
+            positions.sort_by(|a, b| {
+                let ax = a.0;
+                let ay = a.1 - 1;
+                let bx = b.0;
+                let by = b.1 - 1;
+                let a = ax * ax + ay * ay;
+                let b = bx * bx + by * by;
+                a.cmp(&b)
+            });
+        }
+
+        positions.truncate(50);
 
         if !reached_end && positions.contains(&(map.len() - 1, map[0].len() - 2)) {
             reached_end = true;
