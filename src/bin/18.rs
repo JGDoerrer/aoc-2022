@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -47,8 +49,8 @@ pub fn part_one(input: &str) -> Option<u32> {
 
 fn is_outside(
     cubes: &Vec<(i32, i32, i32)>,
-    inner: &mut Vec<(i32, i32, i32)>,
-    outer: &mut Vec<(i32, i32, i32)>,
+    inner: &mut HashSet<(i32, i32, i32)>,
+    outer: &mut HashSet<(i32, i32, i32)>,
     pos: (i32, i32, i32),
 ) -> bool {
     if inner.contains(&pos) {
@@ -63,15 +65,41 @@ fn is_outside(
     let mut done = vec![];
     let mut queue = vec![pos];
 
+    let min_x = cubes.iter().map(|pos| pos.0).min().unwrap();
+    let min_y = cubes.iter().map(|pos| pos.1).min().unwrap();
+    let min_z = cubes.iter().map(|pos| pos.2).min().unwrap();
+    let max_x = cubes.iter().map(|pos| pos.0).max().unwrap();
+    let max_y = cubes.iter().map(|pos| pos.1).max().unwrap();
+    let max_z = cubes.iter().map(|pos| pos.2).max().unwrap();
+
     while !queue.is_empty() {
         let (x, y, z) = queue.remove(0);
-        if done.len() >= max {
-            outer.push(pos);
+        if done.len() >= max
+            || outer.contains(&(x, y, z))
+            || x < min_x
+            || y < min_y
+            || z < min_z
+            || x > max_x
+            || y > max_y
+            || z > max_z
+        {
+            for pos in done {
+                outer.insert(pos);
+            }
+            for pos in queue {
+                outer.insert(pos);
+            }
             return true;
         }
 
-        if outer.contains(&(x, y, z)) {
-            return true;
+        if inner.contains(&(x, y, z)) {
+            for pos in done {
+                inner.insert(pos);
+            }
+            for pos in queue {
+                inner.insert(pos);
+            }
+            return false;
         }
 
         if !cubes.contains(&(x - 1, y, z))
@@ -114,9 +142,9 @@ fn is_outside(
         done.push((x, y, z));
     }
 
-    inner.append(&mut done);
-    inner.sort();
-    inner.dedup();
+    for pos in done {
+        inner.insert(pos);
+    }
 
     false
 }
@@ -138,8 +166,8 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     let mut total = 0;
 
-    let mut inner = vec![];
-    let mut outer = vec![];
+    let mut inner = HashSet::new();
+    let mut outer = HashSet::new();
 
     for (x, y, z) in &cubes {
         let mut surface = 6;
