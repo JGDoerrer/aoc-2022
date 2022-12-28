@@ -169,6 +169,24 @@ pub fn part_two(input: &str) -> Option<u32> {
                     new.push(current);
 
                     new_states.push((pressure, new.clone(), current, c_time, elephant, e_time));
+                    if e_time == 0 {
+                        for (valve2, time2) in valves
+                            .get(&elephant)
+                            .unwrap()
+                            .1
+                            .iter()
+                            .filter(|(v, _)| unopened_valves.contains(&v))
+                        {
+                            new_states.push((
+                                pressure,
+                                new.clone(),
+                                current,
+                                c_time,
+                                valve2,
+                                *time2,
+                            ));
+                        }
+                    }
                 } else {
                     for (valve1, time1) in valves
                         .get(&current)
@@ -180,12 +198,32 @@ pub fn part_two(input: &str) -> Option<u32> {
                         new_states.push((pressure, open.clone(), valve1, *time1, elephant, e_time));
                     }
                 }
-            } else if e_time == 0 {
+            }
+            if e_time == 0 {
                 if !open.contains(&elephant) {
                     let mut new = open.clone();
                     new.push(elephant);
 
                     new_states.push((pressure, new.clone(), current, c_time, elephant, e_time));
+
+                    if c_time == 0 {
+                        for (valve1, time1) in valves
+                            .get(&current)
+                            .unwrap()
+                            .1
+                            .iter()
+                            .filter(|(v, _)| unopened_valves.contains(&v))
+                        {
+                            new_states.push((
+                                pressure,
+                                new.clone(),
+                                valve1,
+                                *time1,
+                                elephant,
+                                e_time,
+                            ));
+                        }
+                    }
                 } else {
                     for (valve2, time2) in valves
                         .get(&elephant)
