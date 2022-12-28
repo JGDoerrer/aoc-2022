@@ -103,10 +103,10 @@ pub fn part_one(input: &str) -> Option<u32> {
         positions.sort();
         positions.dedup();
         positions.sort_by(|a, b| {
-            let ax = a.0 - map.len() - 1;
-            let ay = a.1 - map[0].len() - 2;
-            let bx = b.0 - map.len() - 1;
-            let by = b.1 - map[0].len() - 2;
+            let ax = a.0.saturating_sub(map.len() - 1);
+            let ay = a.1.saturating_sub(map[0].len() - 2);
+            let bx = b.0.saturating_sub(map.len() - 1);
+            let by = b.1.saturating_sub(map[0].len() - 2);
             let a = ax * ax + ay * ay;
             let b = bx * bx + by * by;
             a.cmp(&b)
@@ -223,10 +223,10 @@ pub fn part_two(input: &str) -> Option<u32> {
 
         if !reached_end || reached_start {
             positions.sort_by(|a, b| {
-                let ax = a.0 - map.len() - 1;
-                let ay = a.1 - map[0].len() - 2;
-                let bx = b.0 - map.len() - 1;
-                let by = b.1 - map[0].len() - 2;
+                let ax = a.0.saturating_sub(map.len() - 1);
+                let ay = a.1.saturating_sub(map[0].len() - 2);
+                let bx = b.0.saturating_sub(map.len() - 1);
+                let by = b.1.saturating_sub(map[0].len() - 2);
                 let a = ax * ax + ay * ay;
                 let b = bx * bx + by * by;
                 a.cmp(&b)
